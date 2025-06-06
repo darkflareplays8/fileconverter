@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Multi-Resolution Image to ICO Converter</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Convert any image to a multi-resolution ICO file (16x16, 32x32, 48x48, 64x64, 128x128, 256x256) in your browser. Made by darkflareplays8!" />
+  <meta name="description" content="Convert any image to a multi-resolution ICO file (32x32, 256x256) in your browser. Made by darkflareplays8!" />
   <link rel="icon" href="/favicon.ico" type="image/x-icon" />
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- icojs (for ICO encoding) -->
@@ -26,7 +26,7 @@
     <h1 class="text-3xl font-extrabold text-orange-500 mb-1">🖼️ Multi-Res Image to ICO</h1>
     <p class="text-sm text-red-400 italic mb-4"><a target="_blank" href="https://discord.com/users/1343244701507260416">by DarkFlarePlays8</a></p>
     <p class="text-sm text-red-400 italic mb-4">Light the fire of coding!</p>
-    <p class="text-red-300 mb-4">Upload any image (PNG, JPG, GIF, BMP, WEBP) or paste a direct URL. Creates a single ICO with 16, 32, 48, 64, 128, 256 px sizes.</p>
+    <p class="text-red-300 mb-4">Upload any image (PNG, JPG, GIF, BMP, WEBP) or paste a direct URL. Creates a single ICO with 32 and 256 px sizes.</p>
 
     <!-- Drag and Drop Area -->
     <div id="dropZone" class="w-full p-6 mb-3 border-2 border-dashed border-orange-600 rounded-lg text-orange-400 text-sm cursor-pointer hover:bg-orange-900/40 transition duration-200">
@@ -194,8 +194,8 @@
       const img = new window.Image();
       img.crossOrigin = "Anonymous";
       img.onload = async function() {
-        // Sizes for multi-res ICO
-        const sizes = [16, 32, 48, 64, 128, 256];
+        // Only 32x32 and 256x256 are supported for PNG-in-ICO in browsers
+        const sizes = [32, 256];
         const pngs = [];
         for (const size of sizes) {
           const canvas = document.createElement("canvas");
