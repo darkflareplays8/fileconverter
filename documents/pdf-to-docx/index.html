@@ -87,7 +87,6 @@
 
     let docxBlob = null;
     let docxName = "";
-    const PDFCO_API_KEY = "YOUR_API_KEY_HERE"; // <-- REPLACE THIS WITH YOUR PDF.co API KEY
 
     function isValidURL(str) {
       try {
@@ -183,63 +182,45 @@
       if (fileInput.files.length > 0) {
         pdfBlob = fileInput.files[0];
         baseName = pdfBlob.name.replace(/\.pdf$/i, "");
-        // 1. Upload PDF to PDF.co temporary storage
-        status.textContent = "⏳ Uploading PDF to PDF.co...";
+        // Send file to your Cloudflare Pages Function
         const formData = new FormData();
         formData.append("file", pdfBlob);
-        let uploadedUrl;
         try {
-          const uploadResp = await fetch("https://api.pdf.co/v1/file/upload", {
+          const resp = await fetch("/api/pdf-to-docx", {
             method: "POST",
-            headers: { "x-api-key": PDFCO_API_KEY },
-            body: formData
+            body: formData,
           });
-          const uploadData = await uploadResp.json();
-          if (!uploadData.url) throw new Error();
-          uploadedUrl = uploadData.url;
+          if (!resp.ok) throw new Error();
+          docxBlob = await resp.blob();
+          docxName = baseName + ".docx";
+          status.textContent = "✅ DOCX ready to download!";
+          downloadBtn.style.display = "block";
+          convertBtn.disabled = true;
+          convertBtn.classList.add("bg-gray-600", "cursor-not-allowed");
         } catch {
-          status.textContent = "❌ Failed to upload PDF to PDF.co.";
-          return;
+          status.textContent = "❌ Conversion failed. Please try again.";
         }
-        // 2. Convert PDF to DOCX using the uploaded URL
-        await convertPdfUrlToDocx(uploadedUrl, baseName);
       } else {
         const url = urlInput.value.trim();
         baseName = url.split("/").pop().replace(/\.pdf$/i, "");
-        await convertPdfUrlToDocx(url, baseName);
+        try {
+          const resp = await fetch("/api/pdf-to-docx", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url, name: baseName + ".docx" }),
+          });
+          if (!resp.ok) throw new Error();
+          docxBlob = await resp.blob();
+          docxName = baseName + ".docx";
+          status.textContent = "✅ DOCX ready to download!";
+          downloadBtn.style.display = "block";
+          convertBtn.disabled = true;
+          convertBtn.classList.add("bg-gray-600", "cursor-not-allowed");
+        } catch {
+          status.textContent = "❌ Conversion failed. Please try again.";
+        }
       }
     });
-
-    async function convertPdfUrlToDocx(pdfUrl, baseName) {
-      status.textContent = "⏳ Converting PDF to DOCX...";
-      try {
-        const resp = await fetch("https://api.pdf.co/v1/pdf/convert/to/doc", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": PDFCO_API_KEY
-          },
-          body: JSON.stringify({
-            url: pdfUrl,
-            name: baseName + ".docx"
-          })
-        });
-        const data = await resp.json();
-        if (!data.url) throw new Error();
-        // 3. Download the DOCX file
-        status.textContent = "⏳ Downloading DOCX...";
-        const docxResp = await fetch(data.url);
-        const blob = await docxResp.blob();
-        docxBlob = blob;
-        docxName = baseName + ".docx";
-        status.textContent = "✅ DOCX ready to download!";
-        downloadBtn.style.display = "block";
-        convertBtn.disabled = true;
-        convertBtn.classList.add("bg-gray-600", "cursor-not-allowed");
-      } catch {
-        status.textContent = "❌ Failed to convert PDF to DOCX.";
-      }
-    }
 
     downloadBtn.addEventListener("click", () => {
       if (!docxBlob) return;
