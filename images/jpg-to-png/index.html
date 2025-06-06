@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>JPG to PNG Converter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Convert JPG images to PNG format instantly. Fast and easy to use! Made by darkflareplays8!" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #1a0000, #330000);
+    }
+    .glow {
+      box-shadow: 0 0 10px #ff6b00, 0 0 20px #ff6b00, 0 0 30px #ff6b00;
+    }
+    button {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="text-white flex flex-col items-center justify-center min-h-screen p-6 font-mono">
+  <main class="bg-black/30 backdrop-blur-lg rounded-xl border border-orange-600 shadow-2xl p-8 w-full max-w-md text-center glow">
+    <h1 class="text-3xl font-extrabold text-orange-500 mb-1">🖼️ JPG to PNG Converter</h1>
+    <p class="text-sm text-red-400 italic mb-4"><a target="_blank" href="https://discord.com/users/1343244701507260416">by DarkFlarePlays8</a></p>
+    <p class="text-sm text-red-400 italic mb-4">Light the fire of coding!</p>
+    <p class="text-red-300 mb-4">Upload a <code>.jpg</code> or <code>.jpeg</code> file or paste a direct URL</p>
+
+    <!-- Drag and Drop Area -->
+    <div id="dropZone" class="w-full p-6 mb-3 border-2 border-dashed border-orange-600 rounded-lg text-orange-400 text-sm cursor-pointer hover:bg-orange-900/40 transition duration-200">
+      🚀 Drag & drop your <code>.jpg</code> file here or press the "Choose File" button below to browse your files!
+    </div>
+
+    <!-- File Upload -->
+    <label for="fileInput" class="sr-only">Upload .jpg file</label>
+    <input
+      type="file"
+      id="fileInput"
+      accept=".jpg,.jpeg,image/jpeg"
+      class="block w-full mb-3 text-sm text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-bold file:bg-orange-600 file:text-white hover:file:bg-orange-700 transition duration-200"
+    />
+
+    <!-- OR Separator -->
+    <div class="relative flex items-center justify-center my-3">
+      <div class="w-full border-t border-red-600"></div>
+      <span class="absolute px-3 bg-[#1a0000] text-red-400 font-bold">OR</span>
+    </div>
+
+    <!-- URL Input -->
+    <label for="urlInput" class="sr-only">URL to .jpg</label>
+    <input
+      type="text"
+      id="urlInput"
+      placeholder="https://example.com/image.jpg"
+      class="w-full mb-4 px-4 py-2 rounded bg-gray-800 border border-red-600 text-white placeholder-gray-400"
+    />
+
+    <!-- Convert Button -->
+    <button
+      id="convertBtn"
+      disabled
+      class="w-full bg-gray-600 cursor-not-allowed text-white font-bold py-2 px-4 rounded-full transition duration-200"
+    >
+      Choose file or enter URL
+    </button>
+
+    <!-- Download Button -->
+    <button
+      id="downloadBtn"
+      style="display: none;"
+      class="w-full mt-4 bg-gradient-to-r from-red-600 via-orange-500 to-yellow-400 text-black font-bold py-2 px-4 rounded-full hover:scale-105 hover:shadow-xl glow transition duration-200"
+    >
+      🔥 Download PNG
+    </button>
+
+    <!-- Status Text -->
+    <p id="status" class="mt-4 text-sm text-orange-300"></p>
+  </main>
+
+  <script>
+    const fileInput = document.getElementById("fileInput");
+    const urlInput = document.getElementById("urlInput");
+    const convertBtn = document.getElementById("convertBtn");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const status = document.getElementById("status");
+    const dropZone = document.getElementById("dropZone");
+
+    let pngBlob = null;
+    let pngName = "";
+
+    function isValidURL(str) {
+      try {
+        const url = new URL(str);
+        const hasValidProtocol = url.protocol === "http:" || url.protocol === "https:";
+        const hostnameParts = url.hostname.split(".");
+        const hasTLD = hostnameParts.length > 1 && hostnameParts[hostnameParts.length - 1].length >= 2;
+        return hasValidProtocol && hasTLD;
+      } catch {
+        return false;
+      }
+    }
+
+    function validateInputs() {
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        if (!file.name.toLowerCase().match(/\.(jpg|jpeg)$/)) {
+          status.textContent = "❌ Please upload a valid .jpg or .jpeg file.";
+          convertBtn.disabled = true;
+          return false;
+        }
+      } else if (urlInput.value.trim()) {
+        const url = urlInput.value.trim();
+        if (!isValidURL(url) || !url.toLowerCase().match(/\.(jpg|jpeg)$/)) {
+          status.textContent = "❌ Enter a valid .jpg or .jpeg URL.";
+          convertBtn.disabled = true;
+          return false;
+        }
+      }
+      status.textContent = "";
+      return true;
+    }
+
+    function updateButtonState() {
+      const hasFile = fileInput.files.length > 0;
+      const hasURL = urlInput.value.trim().length > 0;
+
+      if (hasFile || hasURL) {
+        if (!validateInputs()) return;
+        convertBtn.disabled = false;
+        convertBtn.innerText = "⚡ Convert Now";
+        convertBtn.classList.remove("bg-gray-600", "cursor-not-allowed");
+        convertBtn.classList.add("bg-gradient-to-r", "from-red-600", "via-orange-500", "to-yellow-400", "text-black", "hover:scale-105", "hover:shadow-xl", "glow");
+      } else {
+        convertBtn.disabled = true;
+        convertBtn.innerText = "Choose file or enter URL";
+        convertBtn.classList.add("bg-gray-600", "cursor-not-allowed");
+        convertBtn.classList.remove("bg-gradient-to-r", "from-red-600", "via-orange-500", "to-yellow-400", "text-black", "hover:scale-105", "hover:shadow-xl", "glow");
+        downloadBtn.style.display = "none";
+        status.textContent = "";
+      }
+    }
+
+    fileInput.addEventListener("change", updateButtonState);
+    urlInput.addEventListener("input", updateButtonState);
+    convertBtn.addEventListener("click", convert);
+
+    // Drag and drop logic
+    ["dragenter", "dragover"].forEach(event => {
+      dropZone.addEventListener(event, e => {
+        e.preventDefault();
+        dropZone.classList.add("bg-orange-900/30");
+      });
+    });
+
+    ["dragleave", "drop"].forEach(event => {
+      dropZone.addEventListener(event, e => {
+        e.preventDefault();
+        dropZone.classList.remove("bg-orange-900/30");
+      });
+    });
+
+    dropZone.addEventListener("drop", e => {
+      const files = e.dataTransfer.files;
+      if (files.length) {
+        const file = files[0];
+        if (file.name.toLowerCase().match(/\.(jpg|jpeg)$/)) {
+          fileInput.files = files;
+          updateButtonState();
+        } else {
+          status.textContent = "❌ Please upload a valid .jpg or .jpeg file.";
+        }
+      }
+    });
+
+    async function convert() {
+      status.textContent = "📷 Reading JPG...";
+      downloadBtn.style.display = "none";
+      pngBlob = null;
+      pngName = "";
+
+      let imageUrl, baseName;
+
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        imageUrl = URL.createObjectURL(file);
+        baseName = file.name.replace(/\.(jpg|jpeg)$/i, "");
+      } else {
+        imageUrl = urlInput.value.trim();
+        baseName = imageUrl.split("/").pop().replace(/\.(jpg|jpeg)$/i, "");
+      }
+
+      const img = new window.Image();
+      img.crossOrigin = "Anonymous";
+      img.onload = function() {
+        // Create a canvas and draw the image
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        // Convert canvas to PNG blob
+        canvas.toBlob(function(blob) {
+          if (!blob) {
+            status.textContent = "❌ Failed to convert image.";
+            return;
+          }
+          pngBlob = blob;
+          pngName = baseName + ".png";
+          status.textContent = "✅ PNG ready to download!";
+          downloadBtn.style.display = "block";
+          convertBtn.disabled = true;
+          convertBtn.classList.add("bg-gray-600", "cursor-not-allowed");
+        }, "image/png");
+      };
+      img.onerror = function() {
+        status.textContent = "❌ Failed to load image.";
+      };
+      img.src = imageUrl;
+    }
+
+    downloadBtn.addEventListener("click", () => {
+      if (!pngBlob) return;
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(pngBlob);
+      a.download = pngName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+
+      downloadBtn.style.display = "none";
+      status.textContent = "✅ Download started! Your browser may scan for malware, but it will find nothing malicious!";
+      fileInput.value = "";
+      urlInput.value = "";
+      updateButtonState();
+    });
+  </script>
+
+  <a
+    href="/"
+    class="fixed bottom-4 right-4 bg-black/30 backdrop-blur-lg rounded-xl border border-red-600 shadow-2xl text-orange-400 px-4 py-2 text-sm font-bold glow hover:scale-105 hover:shadow-xl transition duration-200 flex items-center gap-2"
+  >
+    🏠 Back to Main Page
+  </a>
+
+  <a
+    href="https://github.com/darkflareplays8/fileconverter"
+    target="_blank"
+    class="fixed bottom-4 left-4 bg-black/30 backdrop-blur-lg rounded-xl border border-red-600 shadow-2xl text-orange-400 px-4 py-2 text-sm font-bold glow hover:scale-105 hover:shadow-xl transition duration-200 flex items-center gap-2"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 fill-orange-400" viewBox="0 0 24 24">
+      <path d="M12 .5C5.73.5.5 5.73.5 12.02c0 5.11 3.29 9.45 7.86 10.98.58.11.79-.25.79-.56 0-.28-.01-1.01-.02-1.99-3.2.7-3.88-1.54-3.88-1.54-.53-1.36-1.29-1.73-1.29-1.73-1.05-.72.08-.71.08-.71 1.17.08 1.79 1.2 1.79 1.2 1.04 1.78 2.74 1.26 3.41.96.11-.76.41-1.26.74-1.55-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.29 1.2-3.1-.12-.3-.52-1.52.12-3.17 0 0 .97-.31 3.18 1.18a11.04 11.04 0 0 1 2.9-.39c.98.01 1.97.13 2.9.39 2.2-1.49 3.17-1.18 3.17-1.18.64 1.65.24 2.87.12 3.17.75.81 1.2 1.84 1.2 3.1 0 4.42-2.68 5.39-5.24 5.67.42.36.79 1.1.79 2.22 0 1.6-.01 2.89-.01 3.28 0 .31.21.68.8.56A10.53 10.53 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5Z"/>
+    </svg>
+    View source code on GitHub
+  </a>
+</body>
+</html>
