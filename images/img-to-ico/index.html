@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Image to ICO Converter</title>
+  <title>Multi-Resolution Image to ICO Converter</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Convert any image (PNG, JPG, GIF, BMP, WEBP) to ICO format instantly. Fast, easy, and stylish! Made by darkflareplays8!" />
+  <meta name="description" content="Convert any image to a multi-resolution ICO file (16x16, 32x32, 48x48, 64x64, 128x128, 256x256) in your browser. Made by darkflareplays8!" />
   <link rel="icon" href="/favicon.ico" type="image/x-icon" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- icojs (for ICO encoding) -->
+  <script src="https://cdn.jsdelivr.net/npm/icojs@0.5.0/dist/ico.min.js"></script>
   <style>
     body {
       background: linear-gradient(to bottom right, #1a0000, #330000);
@@ -21,10 +23,10 @@
 </head>
 <body class="text-white flex flex-col items-center justify-center min-h-screen p-6 font-mono">
   <main class="bg-black/30 backdrop-blur-lg rounded-xl border border-orange-600 shadow-2xl p-8 w-full max-w-md text-center glow">
-    <h1 class="text-3xl font-extrabold text-orange-500 mb-1">🖼️ Image to ICO Converter</h1>
+    <h1 class="text-3xl font-extrabold text-orange-500 mb-1">🖼️ Multi-Res Image to ICO</h1>
     <p class="text-sm text-red-400 italic mb-4"><a target="_blank" href="https://discord.com/users/1343244701507260416">by DarkFlarePlays8</a></p>
     <p class="text-sm text-red-400 italic mb-4">Light the fire of coding!</p>
-    <p class="text-red-300 mb-4">Upload any image (PNG, JPG, GIF, BMP, WEBP) or paste a direct URL</p>
+    <p class="text-red-300 mb-4">Upload any image (PNG, JPG, GIF, BMP, WEBP) or paste a direct URL. Creates a single ICO with 16, 32, 48, 64, 128, 256 px sizes.</p>
 
     <!-- Drag and Drop Area -->
     <div id="dropZone" class="w-full p-6 mb-3 border-2 border-dashed border-orange-600 rounded-lg text-orange-400 text-sm cursor-pointer hover:bg-orange-900/40 transition duration-200">
@@ -70,7 +72,7 @@
       style="display: none;"
       class="w-full mt-4 bg-gradient-to-r from-red-600 via-orange-500 to-yellow-400 text-black font-bold py-2 px-4 rounded-full hover:scale-105 hover:shadow-xl glow transition duration-200"
     >
-      🔥 Download ICO
+      🔥 Download Multi-Res ICO
     </button>
 
     <!-- Status Text -->
@@ -191,53 +193,35 @@
 
       const img = new window.Image();
       img.crossOrigin = "Anonymous";
-      img.onload = function() {
-        // Draw image to 32x32 canvas for favicon
-        const size = 32;
-        const canvas = document.createElement("canvas");
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, size, size);
-        ctx.drawImage(img, 0, 0, size, size);
-
-        // Get PNG data from canvas
-        canvas.toBlob(function(pngBlob) {
-          if (!pngBlob) {
-            status.textContent = "❌ Failed to convert image.";
-            return;
-          }
-          // Read PNG as array buffer
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            // Build ICO header and combine with PNG data
-            const pngData = new Uint8Array(e.target.result);
-            const icoHeader = new Uint8Array([
-              0x00, 0x00, // Reserved
-              0x01, 0x00, // ICO type
-              0x01, 0x00, // Number of images
-              size,       // width
-              size,       // height
-              0x00,       // colors (0 = 256)
-              0x00,       // reserved
-              0x01, 0x00, // color planes
-              0x20, 0x00, // bits per pixel (32)
-              pngData.length & 0xFF, (pngData.length >> 8) & 0xFF, (pngData.length >> 16) & 0xFF, (pngData.length >> 24) & 0xFF, // size of image data
-              22, 0x00, 0x00, 0x00 // offset to image data (22 bytes header)
-            ]);
-            // Combine header and PNG data
-            const icoArray = new Uint8Array(icoHeader.length + pngData.length);
-            icoArray.set(icoHeader, 0);
-            icoArray.set(pngData, icoHeader.length);
-            icoBlob = new Blob([icoArray], { type: "image/x-icon" });
-            icoName = baseName + ".ico";
-            status.textContent = "✅ ICO ready to download!";
-            downloadBtn.style.display = "block";
-            convertBtn.disabled = true;
-            convertBtn.classList.add("bg-gray-600", "cursor-not-allowed");
-          };
-          reader.readAsArrayBuffer(pngBlob);
-        }, "image/png");
+      img.onload = async function() {
+        // Sizes for multi-res ICO
+        const sizes = [16, 32, 48, 64, 128, 256];
+        const pngs = [];
+        for (const size of sizes) {
+          const canvas = document.createElement("canvas");
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext("2d");
+          ctx.clearRect(0, 0, size, size);
+          ctx.drawImage(img, 0, 0, size, size);
+          // Convert canvas to PNG blob, then to Uint8Array
+          const pngBlob = await new Promise(res => canvas.toBlob(res, "image/png"));
+          const arrayBuffer = await pngBlob.arrayBuffer();
+          pngs.push(new Uint8Array(arrayBuffer));
+        }
+        // Use icojs to encode multi-res ICO
+        status.textContent = "🛠️ Creating multi-res ICO...";
+        try {
+          const icoArrayBuffer = icojs.createICO(pngs);
+          icoBlob = new Blob([icoArrayBuffer], { type: "image/x-icon" });
+          icoName = baseName + ".ico";
+          status.textContent = "✅ Multi-res ICO ready to download!";
+          downloadBtn.style.display = "block";
+          convertBtn.disabled = true;
+          convertBtn.classList.add("bg-gray-600", "cursor-not-allowed");
+        } catch (e) {
+          status.textContent = "❌ Failed to create ICO.";
+        }
       };
       img.onerror = function() {
         status.textContent = "❌ Failed to load image.";
