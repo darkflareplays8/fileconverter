@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>File Converter Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Convert files with blazing speed and style. Images, documents, audio, and more!" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #1a0000, #330000);
+    }
+    .glow {
+      box-shadow: 0 0 10px #ff6b00, 0 0 20px #ff6b00, 0 0 30px #ff6b00;
+    }
+    button, .nav-btn, .card-link {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="text-white flex flex-col items-center min-h-screen p-6 font-mono">
+
+  <!-- Header -->
+  <header class="w-full max-w-3xl mx-auto text-center mb-8">
+    <h1 class="text-4xl font-extrabold text-orange-500 mb-1 glow">🔥 File Converter Hub</h1>
+    <p class="text-sm text-red-400 italic mb-4">Light the fire of coding!</p>
+    <nav class="flex justify-center gap-4 mt-2">
+      <a href="#images" class="nav-btn bg-black/30 backdrop-blur-lg rounded-xl border border-red-600 shadow-2xl text-orange-400 px-4 py-2 text-sm font-bold glow hover:scale-105 hover:shadow-xl transition duration-200">🖼️ Images</a>
+      <a href="#documents" class="nav-btn bg-black/30 backdrop-blur-lg rounded-xl border border-red-600 shadow-2xl text-orange-400 px-4 py-2 text-sm font-bold glow hover:scale-105 hover:shadow-xl transition duration-200">📄 Documents</a>
+      <a href="#audio" class="nav-btn bg-black/30 backdrop-blur-lg rounded-xl border border-red-600 shadow-2xl text-orange-400 px-4 py-2 text-sm font-bold glow hover:scale-105 hover:shadow-xl transition duration-200">🎵 Audio</a>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="w-full max-w-4xl flex flex-col gap-12">
+
+    <!-- Images Category -->
+    <section id="images">
+      <h2 class="text-2xl font-bold text-orange-400 mb-4">🖼️ Images</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <a href="/images/png-to-jpg" class="card-link bg-black/30 backdrop-blur-lg rounded-xl border border-orange-600 shadow-2xl p-6 glow hover:scale-105 hover:shadow-xl transition duration-200 flex flex-col items-center">
+          <span class="text-3xl mb-2">🟧</span>
+          <h3 class="text-xl font-bold text-orange-300 mb-1">PNG to JPG</h3>
+          <p class="text-orange-200 text-sm mb-4">Convert PNG images to JPG format instantly.</p>
+          <button class="w-full bg-gradient-to-r from-red-600 via-orange-500 to-yellow-400 text-black font-bold py-2 px-4 rounded-full hover:scale-105 hover:shadow-xl glow transition duration-200">Open Converter</button>
+        </a>
+        <a href="/images/jpg-to-png.html" class="card-link bg-black/30 backdrop-blur-lg rounded-xl border border-orange-600 shadow-2xl p-6 glow hover:scale-105 hover:shadow-xl transition duration-200 flex flex-col items-center">
+          <span class="text-3xl mb-2">🟨</span>
+          <h3 class="text-xl font-bold text-orange-300 mb-1">JPG to PNG</h3>
+          <p class="text-orange-200 text-sm mb-4">Convert JPG images to PNG format easily.</p>
+          <button class="w-full bg-gradient-to-r from-red-600 via-orange-500 to-yellow-400 text-black font-bold py-2 px-4 rounded-full hover:scale-105 hover:shadow-xl glow transition duration-200">Open Converter</button>
+        </a>
+        <!-- Add more image converters as needed -->
+      </div>
+    </section>
+
+    <!-- Documents Category -->
+    <section id="documents">
+      <h2 class="text-2xl font-bold text-orange-400 mb-4">📄 Documents</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <a href="/documents/pdf-to-docx.html" class="card-link bg-black/30 backdrop-blur-lg rounded-xl border border-orange-600 shadow-2xl p-6 glow hover:scale-105 hover:shadow-xl transition duration-200 flex flex-col items-center">
+          <span class="text-3xl mb-2">📄</span>
+          <h3 class="text-xl font-bold text-orange-300 mb-1">PDF to DOCX</h3>
+          <p class="text-orange-200 text-sm mb-4">Convert PDF documents to DOCX format.</p>
+          <button class="w-full bg-gradient-to-r from-red-600 via-orange-500 to-yellow-400 text-black font-bold py-2 px-4 rounded-full hover:scale-105 hover:shadow-xl glow transition duration-200">Open Converter</button>
+        </a>
+        <a href="/documents/docx-to-pdf.html" class="card-link bg-black/30 backdrop-blur-lg rounded-xl border border-orange-600 shadow-2xl p-6 glow hover:scale-105 hover:shadow-xl transition duration-200 flex flex-col items-center">
+          <span class="text-3xl mb-2">📄</span>
+          <h3 class="text-xl font-bold text-orange-300 mb-1">DOCX to PDF</h3>
+          <p class="text-orange-200 text-sm mb-4">Convert DOCX files to PDF format.</p>
+          <button class="w-full bg-gradient-to-r from-red-600 via-orange-500 to-yellow-400 text-black font-bold py-2 px-4 rounded-full hover:scale-105 hover:shadow-xl glow transition duration-200">Open Converter</button>
+        </a>
+        <!-- Add more document converters as needed -->
+      </div>
+    </section>
+
+    <!-- Audio Category -->
+    <section id="audio">
+      <h2 class="text-2xl font-bold text-orange-400 mb-4">🎵 Audio</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <a href="/audio/mp3-to-wav.html" class="card-link bg-black/30 backdrop-blur-lg rounded-xl border border-orange-600 shadow-2xl p-6 glow hover:scale-105 hover:shadow-xl transition duration-200 flex flex-col items-center">
+          <span class="text-3xl mb-2">🎵</span>
+          <h3 class="text-xl font-bold text-orange-300 mb-1">MP3 to WAV</h3>
+          <p class="text-orange-200 text-sm mb-4">Convert MP3 audio files to WAV format.</p>
+          <button class="w-full bg-gradient-to-r from-red-600 via-orange-500 to-yellow-400 text-black font-bold py-2 px-4 rounded-full hover:scale-105 hover:shadow-xl glow transition duration-200">Open Converter</button>
+        </a>
+        <a href="/audio/wav-to-mp3.html" class="card-link bg-black/30 backdrop-blur-lg rounded-xl border border-orange-600 shadow-2xl p-6 glow hover:scale-105 hover:shadow-xl transition duration-200 flex flex-col items-center">
+          <span class="text-3xl mb-2">🎵</span>
+          <h3 class="text-xl font-bold text-orange-300 mb-1">WAV to MP3</h3>
+          <p class="text-orange-200 text-sm mb-4">Convert WAV audio files to MP3 format.</p>
+          <button class="w-full bg-gradient-to-r from-red-600 via-orange-500 to-yellow-400 text-black font-bold py-2 px-4 rounded-full hover:scale-105 hover:shadow-xl glow transition duration-200">Open Converter</button>
+        </a>
+        <!-- Add more audio converters as needed -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-3xl mx-auto text-center mt-12 text-orange-300">
+    <p>&copy; 2025 File Converter Hub &mdash; Made by DarkFlarePlays8</p>
+    <p class="mt-2 text-sm text-red-400">
+      <a href="https://github.com/darkflareplays8/mrpacktozip" target="_blank" class="underline hover:text-orange-200">View source code on GitHub</a>
+    </p>
+  </footer>
+</body>
+</html>
