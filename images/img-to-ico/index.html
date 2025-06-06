@@ -193,22 +193,20 @@
 
       const img = new window.Image();
       img.crossOrigin = "Anonymous";
-      img.onload = async function() {
-        // Only 32x32 and 256x256 are supported for PNG-in-ICO in browsers
-        const sizes = [32, 256];
-        const pngs = [];
-        for (const size of sizes) {
-          const canvas = document.createElement("canvas");
-          canvas.width = size;
-          canvas.height = size;
-          const ctx = canvas.getContext("2d");
-          ctx.clearRect(0, 0, size, size);
-          ctx.drawImage(img, 0, 0, size, size);
-          // Convert canvas to PNG blob, then to Uint8Array
-          const pngBlob = await new Promise(res => canvas.toBlob(res, "image/png"));
-          const arrayBuffer = await pngBlob.arrayBuffer();
-          pngs.push(new Uint8Array(arrayBuffer));
-        }
+img.onload = async function() {
+  // Validate that the image is at least 32x32 and square
+  if (img.width < 32 || img.height < 32) {
+    status.textContent = "❌ Image must be least 32×32 pixels.";
+    return;
+  }
+  if (img.width !== img.height) {
+    status.textContent = "❌ Image must be perfectly square (width = height).";
+    return;
+  }
+
+  // ...rest of your code for creating canvases and ICO...
+};
+
         // Use icojs to encode multi-res ICO
         status.textContent = "🛠️ Creating multi-res ICO...";
         try {
